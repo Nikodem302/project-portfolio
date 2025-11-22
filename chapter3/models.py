@@ -22,7 +22,7 @@ class Player(Base):
 
 
 class Performance(Base):
-    __tablename__ = "performances"
+    __tablename__ = "performance"
 
     performance_id = Column(Integer, primary_key=True, index=True)
     week_number = Column(String, nullable=False)
