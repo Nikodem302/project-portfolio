@@ -38,11 +38,16 @@ def get_db():
     finally:
         db.close()
 
-@app.get("/")
+@app.get(
+    "/",
+    tags=["analytics"])
 async def root():
     return {"message": "API health check successful"}
 
-@app.get("/v0/players/", response_model=list[schemas.Player])
+@app.get(
+    "/v0/players/", 
+    response_model=list[schemas.Player],
+    tags=["players"])
 def read_players(skip: int = 0, 
                  limit: int = 100,
                  minimum_last_changed_date: date = None,
@@ -57,7 +62,10 @@ def read_players(skip: int = 0,
                                last_name=last_name)
     return players
 
-@app.get("/v0/players/{player_id}", response_model=schemas.Player)
+@app.get(
+    "/v0/players/{player_id}", 
+    response_model=schemas.Player, 
+    tags=["players"])
 def read_player(player_id: int,
                 db: Session = Depends(get_db)):
     player = crud.get_player(db,
@@ -67,7 +75,10 @@ def read_player(player_id: int,
                             detail="Player not found")
     return player
 
-@app.get("/v0/performances/", response_model=list[schemas.Performance])
+@app.get(
+    "/v0/performances/", 
+    response_model=list[schemas.Performance],
+    tags=["scoring"])
 def read_performances(skip: int = 0, 
                  limit: int = 100,
                  minimum_last_changed_date: date = None,
@@ -78,14 +89,20 @@ def read_performances(skip: int = 0,
                                         min_last_changed_date=minimum_last_changed_date)
     return performances
 
-@app.get("/v0/leagues/{league_id}", response_model=schemas.League)
+@app.get(
+    "/v0/leagues/{league_id}", 
+    response_model=schemas.League,
+    tags=["membership"])
 def read_league(league_id: int, db: Session = Depends(get_db)):
     league = crud.get_league(db, league_id = league_id)
     if league is None:
         raise HTTPException(status_code=404, detail="League not found")
     return league
 
-@app.get("/v0/leagues/", response_model=list[schemas.League])
+@app.get(
+    "/v0/leagues/", 
+    response_model=list[schemas.League],
+    tags=["membership"])
 def read_leagues(skip: int = 0, 
                 limit: int = 100, 
                 minimum_last_changed_date: date = None, 
@@ -98,7 +115,10 @@ def read_leagues(skip: int = 0,
                 league_name=league_name)
     return leagues
 
-@app.get("/v0/teams/", response_model=list[schemas.Team])
+@app.get(
+    "/v0/teams/", 
+    response_model=list[schemas.Team],
+    tags=["membership"])
 def read_teams(skip: int = 0, 
                limit: int = 100, 
                minimum_last_changed_date: date = None, 
@@ -114,7 +134,10 @@ def read_teams(skip: int = 0,
     return teams
 
 
-@app.get("/v0/counts/", response_model=schemas.Counts)
+@app.get(
+    "/v0/counts/", 
+    response_model=schemas.Counts,
+    tags=["analytics"])
 def get_count(db: Session = Depends(get_db)):
     counts = schemas.Counts(
         league_count = crud.get_league_count(db),
